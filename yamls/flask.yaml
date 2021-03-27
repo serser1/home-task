@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-app
+spec:
+  selector:
+    matchLabels:
+      run: flask-app
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: flask-app
+    spec:
+      containers:
+      - name: flask-app
+        image: serser1/flap:v3
+        env:
+        - name: TABLE_NAME
+          value: 'postgres'
+        - name: POSTGRESIP
+          value: 'postgres'
+        - name: POSTGRES_PORT
+          value: '5432'
+
+        ports:
+        - containerPort: 5000
+        resources:
+          limits:
+            cpu: 500m
+          requests:
+            cpu: 200m
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: flask-app
+  labels:
+    run: flask-app
+spec:
+  type: NodePort
+  ports:
+  - port: 5000
+    targetPort: 5000
+    nodePort: 30007
+  selector:
+    run: flask-app
