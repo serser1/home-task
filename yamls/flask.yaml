@@ -38,10 +38,10 @@ metadata:
   labels:
     run: flask-app
 spec:
-  type: NodePort
   ports:
   - port: 5000
-    targetPort: 5000
-    nodePort: 30007
   selector:
     run: flask-app
+  type: LoadBalancer
+  loadBalancerSourceRanges:
+  - "10.0.0.0/16"
