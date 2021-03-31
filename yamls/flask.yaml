@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: flask-app
-        image: serser1/flap:v3
+        image: serser1/flaskapp:v1
         env:
         - name: TABLE_NAME
           value: 'postgres'

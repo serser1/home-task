@@ -10,6 +10,7 @@ con = psycopg2.connect(host=postgresip,
                        database='postgres',
                        user='postgres',
                        password='postgres')
+con.autocommit = True
 
 def CheckIFUserExists(user_id):
     cur = con.cursor()
@@ -28,7 +29,6 @@ def CreateTable(tablename):
 
 """)
     cur.close()
-    con.commit()
 
 
 
@@ -67,24 +67,23 @@ def DeleteUserById():
     if CheckIFUserExists(user_id):
         cur = con.cursor()
         cur.execute(f"""DELETE FROM {t} WHERE id='{user_id}' """)
-        con.commit()
         return "Deleted"
     else:
         return "user Not Found",404
 
 
-@app.route('/api/v1/GetDeleteById/<int:user_id>')
-def GetUserById(user_id):
-    cur = con.cursor()
-    cur.execute(f"""select * from {t} where id='{user_id}'""")
     return jsonify(cur.fetchall())
 
 
-@app.route('/api/v1/GetDeleteByName/<string:user_name>')
-def GetUserByUsername(user_name):
+@app.route('/api/v1/DeleteAllByName',methods=['DELETE'])
+def DeleteUserByUsername():
+    req = request.get_json()
+    if not 'username' in req :
+        return 'ERORE : No user Found'
+    user_name=req['username']
     cur = con.cursor()
-    cur.execute(f"""select * from {t} where username='{user_name}'""")
-    return jsonify(cur.fetchall())
+    cur.execute(f"""DELETE from {t} where username='{user_name}'""")
+    return 'Deleted' 
 
 
 app.run(debug=True,host='0.0.0.0')
